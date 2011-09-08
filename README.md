@@ -33,4 +33,4 @@ This demo Python application is intended to demonstrate the basic usage of the [
 ## Setup 
 Customize the Sample.py file with your AppID/Secret Key credentials (obtained from your Apps page on the SCORM Cloud site). To start, run `python Sample.py` and then open http://localhost:8080 in a web browser.
 
-*Note: The SCORM Cloud Client Library for Python is included as a Git submodule. When cloning, be sure to add the `--recursive` flag or run `git submodule update --init` after the initial clone.
+*Note: The SCORM Cloud Client Library for Python is included as a Git submodule. When cloning, be sure to add the `--recursive` flag or run `git submodule update --init` after the initial clone.*
