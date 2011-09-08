@@ -1,0 +1,3 @@
+[submodule "scormcloud"]
+	path = scormcloud
+	url = https://github.com/RusticiSoftware/SCORMCloud_PythonLibrary
