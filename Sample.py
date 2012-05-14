@@ -79,7 +79,7 @@ def CourseList():
 	allcourses = []
 	if coursecount > 0:
 		html += """<table>
-		<tr><td>Title</td><td>Registrations</td><td></td><td></td></tr>
+		<tr><td>Title</td><td>Registrations</td><td></td><td></td><td></td></tr>
 
 		"""
 		def regFilter(x): return x.courseId == courseData.courseId
@@ -90,6 +90,7 @@ def CourseList():
 			
 			html += "<tr><td>" + courseData.title + "</td>"
 			html += '<td><a href="/sample/course/regs/' + courseData.courseId + '">' + str(len(courseRegs)) + '</a></td>'
+			html += '<td><a href="/sample/course/invitations/' + courseData.courseId + '">Invitations</a></td>'
 			html += '<td><a href="/sample/course/properties/' + courseData.courseId + '">Properties Editor</a></td>'
 			html += '<td><a href="/sample/course/preview/' + courseData.courseId + '?redirecturl=' + sampleBaseUri + '/sample/courselist">Preview</a></td>'
 			html += '<td><a href="/sample/course/delete/' + courseData.courseId + '">Delete</a></td></tr>'
@@ -251,5 +252,108 @@ def ResetGlobals(regid):
 	redirectUrl = '/sample/course/regs/' + request.GET.get('courseid')
 	redirect(redirectUrl)
 	
+@route('/sample/course/invitations/:courseid')
+def InvitationList(courseid):
+
+	isvc = cloud.get_invitation_service()
+	data = isvc.get_invitation_list(None,courseid)
+	
+	
+	html = """
+	<style>table,td {border:1px solid;}</style>
+	<h1>Invitations</h1>
+	<p><a href="/sample/courselist">Return to Course List</a></p>
+	
+	<table ><tr><td>Invitation Id</td><td>Subject</td><td></td><td></td><td></td></tr>
+	"""
+	invites = data.getElementsByTagName("invitationInfo")
+	for inv in invites:
+		html += "<tr><td>" + inv.getElementsByTagName("id")[0].childNodes[0].nodeValue+ "</td>"
+		html += "<td>" + inv.getElementsByTagName("subject")[0].childNodes[0].nodeValue+ "</td>"
+		html += "<td><a href='/sample/invitation/" + inv.getElementsByTagName("id")[0].childNodes[0].nodeValue +  "'>details</a></td>"
+		if inv.getElementsByTagName("allowLaunch")[0].childNodes[0].nodeValue == 'true':
+			html += "<td><a href='/sample/invitation/change/" + inv.getElementsByTagName("id")[0].childNodes[0].nodeValue +  "?enable=false&open=" + inv.getElementsByTagName("allowNewRegistrations")[0].childNodes[0].nodeValue + "&courseid=" + courseid + "'>enabled</td>"
+		else:
+			html += "<td><a href='/sample/invitation/change/" + inv.getElementsByTagName("id")[0].childNodes[0].nodeValue +  "?enable=true&open=" + inv.getElementsByTagName("allowNewRegistrations")[0].childNodes[0].nodeValue + "&courseid=" + courseid + "'>disabled</td>"
+		if inv.getElementsByTagName("public")[0].childNodes[0].nodeValue == 'true':
+			if inv.getElementsByTagName("allowNewRegistrations")[0].childNodes[0].nodeValue == 'true':
+				html += "<td><a href='/sample/invitation/change/" + inv.getElementsByTagName("id")[0].childNodes[0].nodeValue +  "?enable=" + inv.getElementsByTagName("allowLaunch")[0].childNodes[0].nodeValue + "&open=false&courseid=" + courseid + "'>open</td>"
+			else:
+				html += "<td><a href='/sample/invitation/change/" + inv.getElementsByTagName("id")[0].childNodes[0].nodeValue +  "?enable=" + inv.getElementsByTagName("allowLaunch")[0].childNodes[0].nodeValue + "&open=true&courseid=" + courseid + "'>closed</td>"
+		else:
+			html += "<td>(not public)</td>"
+		
+		
+	
+	html += """</table>
+	
+	<br/><br/>
+<h3>Create new invitation</h3>
+<form action="/sample/invitation/create" method="post" enctype="multipart/form-data">
+	"""
+	html += '<input type="hidden" name="courseid" value="' + courseid + '"  />'
+	html += """
+<br/>
+Sender email: <input type="text" name="creatingUserEmail">
+<br/>
+<input type="checkbox" name="send"> send
+<br/>
+<input type="checkbox" name="public"> public
+<br />
+To addresses: <input type="text" name="addresses"> (comma-delimited)
+<br />
+<input type="submit" name="submit" value="Submit" />
+</form>
+	"""
+	return html
+
+@route('/sample/invitation/create','POST')
+def CreateInvitation():
+
+	courseid = request.POST.get('courseid')
+	if request.POST.get('creatingUserEmail') != None:
+		creatingUserEmail = request.POST.get('creatingUserEmail')
+	send = request.POST.get('send') =='on' or None
+	public = request.POST.get('public') =='on' or None
+	addresses = request.POST.get('addresses') or None	
+		
+	isvc = cloud.get_invitation_service()
+	data = isvc.create_invitation(courseid,public,send,addresses,None,None,creatingUserEmail)
+	
+	redirectUrl = '/sample/course/invitations/' + request.POST.get('courseid')
+	redirect(redirectUrl)
+
+@route('/sample/invitation/change/:invid')
+def UpdateInvitationStatus(invid):
+
+	enable = request.GET.get('enable')
+	open = request.GET.get('open')
+	
+	isvc = cloud.get_invitation_service()
+	data = isvc.change_status(invid,enable,open)
+	
+	redirectUrl = '/sample/course/invitations/' + request.GET.get('courseid')
+	redirect(redirectUrl)
+	
+@route('/sample/invitation/:invid')
+def GetInvitationInfo(invid):
+
+	isvc = cloud.get_invitation_service()
+	status = isvc.get_invitation_status(invid)
+	data = isvc.get_invitation_info(invid)
+	
+	html = """
+	<h1>Invitation Details</h1>
+	<p><a href="/sample/courselist">Return to Course List</a></p>
+	
+	"""
+	
+	html += "Invitation Job Status: " + status.toxml()
+	
+	html += "<br/><br/>"
+	
+	html += "<textarea style='width:900px;height:400px;'>" + data.toxml() + "</textarea>"
+	
+	return html
 	
 run(host='localhost',port=8080,reloader=True)
