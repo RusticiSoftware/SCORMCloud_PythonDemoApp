@@ -20,7 +20,7 @@ from scormcloud.client import ScormCloudUtilities
 
 appId =  ""    # e.g."3ABCDJHRT"
 secretKey = ""    # e.g."aBCDEF7o8AOF7qsP0649KfLyXOlfgyxyyt7ecd2U"
-serviceUrl = "http://cloud.scorm.com/EngineWebServices"
+serviceUrl = "https://cloud.scorm.com/EngineWebServices"
 origin = ScormCloudUtilities.get_canonical_origin_string('your company', 
          'sample application', '1.0')
 cloud = ScormCloudService.withargs(appId, secretKey, serviceUrl, origin)
