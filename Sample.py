@@ -316,9 +316,10 @@ def CreateInvitation():
 	send = request.POST.get('send') =='on' or None
 	public = request.POST.get('public') =='on' or None
 	addresses = request.POST.get('addresses') or None	
-		
+
 	isvc = cloud.get_invitation_service()
-	data = isvc.create_invitation(courseid,public,send,addresses,None,None,creatingUserEmail)
+
+	data = isvc.create_invitation(courseid,None,str(public),str(send),addresses,None,None,creatingUserEmail)
 	
 	redirectUrl = '/sample/course/invitations/' + request.POST.get('courseid')
 	redirect(redirectUrl)
