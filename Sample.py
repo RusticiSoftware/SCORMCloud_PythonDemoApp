@@ -18,9 +18,9 @@ from scormcloud.client import ScormCloudService
 from scormcloud.client import ScormCloudUtilities
 
 
-appId =  "ZEUYP2C4VP"    # e.g."3ABCDJHRT"
-secretKey = "X8PAjpo7jO73dzIBiorclF9KER4NK1DD8FuUsNvs"    # e.g."aBCDEF7o8AOF7qsP0649KfLyXOlfgyxyyt7ecd2U"
-serviceUrl = "https://stagingx.cloud.scorm.com/EngineWebServices"
+appId =  ""    # e.g."3ABCDJHRT"
+secretKey = ""    # e.g."aBCDEF7o8AOF7qsP0649KfLyXOlfgyxyyt7ecd2U"
+serviceUrl = "https://cloud.scorm.com/EngineWebServices"
 origin = ScormCloudUtilities.get_canonical_origin_string('your company', 
          'sample application', '1.0')
 cloud = ScormCloudService.withargs(appId, secretKey, serviceUrl, origin)
