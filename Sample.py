@@ -18,9 +18,9 @@ from scormcloud.client import ScormCloudService
 from scormcloud.client import ScormCloudUtilities
 
 
-appId =  ""    # e.g."3ABCDJHRT"
-secretKey = ""    # e.g."aBCDEF7o8AOF7qsP0649KfLyXOlfgyxyyt7ecd2U"
-serviceUrl = "https://cloud.scorm.com/EngineWebServices"
+appId =  "ZEUYP2C4VP"    # e.g."3ABCDJHRT"
+secretKey = "X8PAjpo7jO73dzIBiorclF9KER4NK1DD8FuUsNvs"    # e.g."aBCDEF7o8AOF7qsP0649KfLyXOlfgyxyyt7ecd2U"
+serviceUrl = "https://stagingx.cloud.scorm.com/EngineWebServices"
 origin = ScormCloudUtilities.get_canonical_origin_string('your company', 
          'sample application', '1.0')
 cloud = ScormCloudService.withargs(appId, secretKey, serviceUrl, origin)
@@ -316,9 +316,10 @@ def CreateInvitation():
 	send = request.POST.get('send') =='on' or None
 	public = request.POST.get('public') =='on' or None
 	addresses = request.POST.get('addresses') or None	
-		
+
 	isvc = cloud.get_invitation_service()
-	data = isvc.create_invitation(courseid,public,send,addresses,None,None,creatingUserEmail)
+
+	data = isvc.create_invitation(courseid,None,str(public),str(send),addresses,None,None,creatingUserEmail)
 	
 	redirectUrl = '/sample/course/invitations/' + request.POST.get('courseid')
 	redirect(redirectUrl)
